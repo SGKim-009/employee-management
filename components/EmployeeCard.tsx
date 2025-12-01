@@ -7,6 +7,7 @@ interface EmployeeCardProps {
   employee: Employee;
   onEdit: (employee: Employee) => void;
   onDelete: (id: string) => void;
+  onViewDetails: (employee: Employee) => void;  // 이 줄이 있는지 확인!
 }
 
 export default function EmployeeCard({ employee, onEdit, onDelete }: EmployeeCardProps) {
