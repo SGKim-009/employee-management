@@ -20,6 +20,7 @@ export interface Career {
 // 직원 타입
 export interface Employee {
   id: string;
+  employee_number?: string; // 🆕 사원번호 추가
   name: string;
   position: string;
   rank: string;
@@ -27,6 +28,7 @@ export interface Employee {
   phone?: string;
   department: string;
   hire_date: string;
+  resignation_date?: string; // 🆕 퇴사일 추가
   current_salary: number;
   
   // 학력
@@ -56,6 +58,7 @@ export interface SalaryHistory {
   previous_salary: number;
   new_salary: number;
   change_date: string;
+  change_year_month?: string; // 🆕 연월 추가
   change_reason?: string;
   created_at: string;
 }
@@ -76,3 +79,19 @@ export interface PositionHistory {
 }
 
 export type NewEmployee = Omit<Employee, 'id' | 'created_at' | 'updated_at'>;
+
+// 🆕 근속 기간 계산 유틸리티
+export function calculateTenure(hireDate: string, resignationDate?: string): string {
+  const start = new Date(hireDate);
+  const end = resignationDate ? new Date(resignationDate) : new Date();
+  
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  
+  return `${years}년 ${months}개월`;
+}

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Employee, Certification, Career } from '@/types/employee';
 import { X, Plus, Trash2, Upload, User } from 'lucide-react';
 import { employeeService } from '@/lib/supabaseClient';
+import { employeeService } from '@/lib/supabaseClient';
+import { SalaryHistory } from '@/types/employee';
 
 interface EmployeeFormProps {
   employee?: Employee | null;
@@ -15,8 +17,17 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
   const [activeTab, setActiveTab] = useState<'basic' | 'education' | 'career' | 'salary'>('basic');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [salaryHistory, setSalaryHistory] = useState<SalaryHistory[]>([]);
+  const [loadingSalaryHistory, setLoadingSalaryHistory] = useState(false);
+  const [editingSalaryId, setEditingSalaryId] = useState<string | null>(null);
+  const [editingSalaryData, setEditingSalaryData] = useState<{
+    year_month: string;
+    amount: number;
+    reason: string;
+}>({ year_month: '', amount: 0, reason: '' });
   
   const [formData, setFormData] = useState({
+    employee_number: '',
     name: '',
     position: '',
     rank: '사원',
@@ -24,6 +35,7 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
     phone: '',
     department: '',
     hire_date: '',
+    resignation_date: '',
     current_salary: 0,
     education_level: '',
     education_school: '',
@@ -39,6 +51,7 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
   useEffect(() => {
     if (employee) {
       setFormData({
+        employee_number: employee.employee_number || '',
         name: employee.name,
         position: employee.position,
         rank: employee.rank,
@@ -46,6 +59,7 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
         phone: employee.phone || '',
         department: employee.department,
         hire_date: employee.hire_date,
+        resignation_date: employee.resignation_date || '',
         current_salary: employee.current_salary,
         education_level: employee.education_level || '',
         education_school: employee.education_school || '',
@@ -62,6 +76,68 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
       }
     }
   }, [employee]);
+// 급여 변동 이력 불러오기
+useEffect(() => {
+  if (employee && activeTab === 'salary') {
+    fetchSalaryHistory();
+  }
+}, [employee, activeTab]);
+
+const fetchSalaryHistory = async () => {
+  if (!employee) return;
+  
+  try {
+    setLoadingSalaryHistory(true);
+    const history = await employeeService.getSalaryHistory(employee.id);
+    setSalaryHistory(history);
+  } catch (error) {
+    console.error('Error fetching salary history:', error);
+  } finally {
+    setLoadingSalaryHistory(false);
+  }
+};
+
+// 급여 변동 이력 수정 시작
+const startEditSalary = (history: SalaryHistory) => {
+  setEditingSalaryId(history.id);
+  setEditingSalaryData({
+    year_month: history.change_year_month || '',
+    amount: history.new_salary,
+    reason: history.change_reason || ''
+  });
+};
+
+// 급여 변동 이력 수정 저장
+const saveSalaryEdit = async () => {
+  if (!editingSalaryId) return;
+  
+  try {
+    await employeeService.updateSalaryHistory(editingSalaryId, {
+      change_year_month: editingSalaryData.year_month,
+      new_salary: editingSalaryData.amount,
+      change_reason: editingSalaryData.reason
+    });
+    
+    await fetchSalaryHistory();
+    setEditingSalaryId(null);
+  } catch (error) {
+    alert('급여 이력 수정에 실패했습니다.');
+    console.error('Error updating salary history:', error);
+  }
+};
+
+// 급여 변동 이력 삭제
+const deleteSalaryHistory = async (id: string) => {
+  if (!confirm('이 급여 변동 이력을 삭제하시겠습니까?')) return;
+  
+  try {
+    await employeeService.deleteSalaryHistory(id);
+    await fetchSalaryHistory();
+  } catch (error) {
+    alert('급여 이력 삭제에 실패했습니다.');
+    console.error('Error deleting salary history:', error);
+  }
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,6 +287,37 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
             {activeTab === 'basic' && (
               <div className="space-y-6">
                 {/* 프로필 이미지 업로드 */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* 🆕 사원번호 필드 추가 */}
+                    <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                         사원번호
+                         </label>
+                         <input
+                            type="text"
+                            name="employee_number"
+                            value={formData.employee_number}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="EMP0001"
+                          />
+                         <p className="text-xs text-gray-500 mt-1">공백 시 자동 생성됩니다</p>
+                       </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                           이름 <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="홍길동"
+                         />
+                       </div>
                 <div className="flex flex-col items-center mb-6">
                   <div className="relative mb-4">
                     {imagePreview ? (
@@ -368,6 +475,21 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
                       <option value="resigned">퇴사</option>
                     </select>
                   </div>
+                 {formData.status === 'resigned' && (
+                   <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                       퇴사일 <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        name="resignation_date"
+                        value={formData.resignation_date}
+                        onChange={handleChange}
+                        required={formData.status === 'resigned'}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -632,44 +754,172 @@ export default function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeF
             )}
 
             {/* 급여 & 메모 탭 */}
-            {activeTab === 'salary' && (
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">급여 정보</h3>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      현재 급여 (월급) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="current_salary"
-                      value={formData.current_salary}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="3500000"
-                      min="0"
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                      {formData.current_salary.toLocaleString()}원
-                    </p>
-                  </div>
-                </div>
+{activeTab === 'salary' && (
+  <div className="space-y-6">
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">급여 정보</h3>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          현재 급여 (월급) <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          name="current_salary"
+          value={formData.current_salary}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="3500000"
+          min="0"
+        />
+        <p className="text-sm text-gray-500 mt-1">
+          {formData.current_salary.toLocaleString()}원
+        </p>
+      </div>
+    </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">메모</h3>
-                  <textarea
-                    name="notes"
-                    value={formData.notes}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="추가 메모사항을 입력하세요..."
-                    rows={6}
-                  />
-                </div>
-              </div>
-            )}
+    {/* 🆕 급여 변동 이력 - 여기부터 새로 추가된 부분 */}
+    {employee && (
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">급여 변동 이력</h3>
+        {loadingSalaryHistory ? (
+          <div className="text-center py-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           </div>
+        ) : salaryHistory.length > 0 ? (
+          <div className="space-y-3">
+            {salaryHistory.map((history) => (
+              <div key={history.id} className="bg-white p-4 rounded-lg border border-gray-200">
+                {editingSalaryId === history.id ? (
+                  // 편집 모드
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">연월</label>
+                        <input
+                          type="month"
+                          value={editingSalaryData.year_month}
+                          onChange={(e) => setEditingSalaryData({
+                            ...editingSalaryData,
+                            year_month: e.target.value
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">금액</label>
+                        <input
+                          type="number"
+                          value={editingSalaryData.amount}
+                          onChange={(e) => setEditingSalaryData({
+                            ...editingSalaryData,
+                            amount: parseInt(e.target.value) || 0
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="block text-xs text-gray-600 mb-1">사유</label>
+                        <input
+                          type="text"
+                          value={editingSalaryData.reason}
+                          onChange={(e) => setEditingSalaryData({
+                            ...editingSalaryData,
+                            reason: e.target.value
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={saveSalaryEdit}
+                        className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                      >
+                        저장
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingSalaryId(null)}
+                        className="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // 보기 모드
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="text-sm font-semibold text-blue-600">
+                            {history.change_year_month || new Date(history.change_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+                          </span>
+                          <span className="text-gray-400">→</span>
+                          <span className="text-lg font-bold text-gray-800">
+                            {history.new_salary.toLocaleString()}원
+                          </span>
+                        </div>
+                        {history.previous_salary > 0 && (
+                          <p className="text-xs text-gray-500">
+                            이전: {history.previous_salary.toLocaleString()}원 
+                            <span className={`ml-2 ${
+                              history.new_salary > history.previous_salary ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              ({history.new_salary > history.previous_salary ? '+' : ''}
+                              {(history.new_salary - history.previous_salary).toLocaleString()}원)
+                            </span>
+                          </p>
+                        )}
+                        {history.change_reason && (
+                          <p className="text-sm text-gray-600 mt-1">사유: {history.change_reason}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => startEditSalary(history)}
+                          className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                          title="수정"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteSalaryHistory(history.id)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded"
+                          title="삭제"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 py-4">급여 변동 이력이 없습니다.</p>
+        )}
+      </div>
+    )}
+
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">메모</h3>
+      <textarea
+        name="notes"
+        value={formData.notes}
+        onChange={handleChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="추가 메모사항을 입력하세요..."
+        rows={6}
+      />
+    </div>
+  </div>
+)}
 
           {/* 액션 버튼 */}
           <div className="flex gap-3 pt-6 border-t mt-6">
