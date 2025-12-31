@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { Employee, SalaryHistory, PositionHistory } from '@/types/employee';
 import { employeeService } from '@/lib/supabaseClient';
 import { X, User, Mail, Phone, Briefcase, Calendar, TrendingUp
@@ -11,7 +12,7 @@ interface EmployeeDetailsProps {
   onClose: () => void;
 }
 
-export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
+function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
   const [activeTab, setActiveTab] = useState<'info' | 'history'>('info');
   const [salaryHistory, setSalaryHistory] = useState<SalaryHistory[]>([]);
   const [positionHistory, setPositionHistory] = useState<PositionHistory[]>([]);
@@ -37,27 +38,30 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
     }
   };
 
-  const calculateWorkYears = () => {
+  const workYears = useMemo(() => {
     const hireDate = new Date(employee.hire_date);
     const today = new Date();
     const years = today.getFullYear() - hireDate.getFullYear();
     const months = today.getMonth() - hireDate.getMonth();
     const totalMonths = years * 12 + months;
     return `${Math.floor(totalMonths / 12)}년 ${totalMonths % 12}개월`;
-  };
+  }, [employee.hire_date]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full my-8 max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full my-8 max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
         {/* 헤더 */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-4">
               {employee.profile_image_url ? (
-                <img
+                <Image
                   src={employee.profile_image_url}
                   alt={employee.name}
+                  width={80}
+                  height={80}
                   className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center border-4 border-white shadow-lg">
@@ -72,7 +76,8 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors"
+              className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
+              aria-label="상세보기 닫기"
             >
               <X size={24} />
             </button>
@@ -84,21 +89,25 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
           <div className="flex px-6">
             <button
               onClick={() => setActiveTab('info')}
-              className={`px-6 py-4 font-medium transition-colors ${
+              className={`px-6 py-4 font-medium transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 activeTab === 'info'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 hover:text-gray-800'
               }`}
+              aria-label="상세 정보 탭"
+              aria-pressed={activeTab === 'info'}
             >
               상세 정보
             </button>
             <button
               onClick={() => setActiveTab('history')}
-              className={`px-6 py-4 font-medium transition-colors ${
+              className={`px-6 py-4 font-medium transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 activeTab === 'history'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 hover:text-gray-800'
               }`}
+              aria-label="변동 이력 탭"
+              aria-pressed={activeTab === 'history'}
             >
               변동 이력
             </button>
@@ -139,7 +148,7 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-1">재직 기간</p>
-                    <p className="text-gray-800 font-medium">{calculateWorkYears()}</p>
+                    <p className="text-gray-800 font-medium">{workYears}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-1">현재 급여</p>
@@ -368,7 +377,8 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
         <div className="border-t p-4 bg-gray-50">
           <button
             onClick={onClose}
-            className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="w-full px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            aria-label="상세보기 닫기"
           >
             닫기
           </button>
@@ -377,3 +387,5 @@ export default function EmployeeDetails({ employee, onClose }: EmployeeDetailsPr
     </div>
   );
 }
+
+export default memo(EmployeeDetails);
