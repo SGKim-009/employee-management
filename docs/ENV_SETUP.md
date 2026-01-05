@@ -109,3 +109,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 - `.env.example` 파일을 참고하여 필요한 환경 변수를 확인할 수 있습니다
 - Next.js 환경 변수 문서: https://nextjs.org/docs/basic-features/environment-variables
 
+

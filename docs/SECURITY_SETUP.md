@@ -186,3 +186,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - 정책을 수정한 후에는 테스트를 반드시 수행하세요
 - 프로덕션 환경에서는 더 엄격한 정책을 적용하는 것을 권장합니다
 
+

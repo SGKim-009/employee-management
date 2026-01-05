@@ -47,8 +47,12 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
       hire_date: '',
       resignation_date: '',
       current_salary: 0,
+      contract_start_date: '',
+      contract_end_date: '',
+      contract_renewal_date: '',
       resident_number: '',
       address: '',
+      birth_date: '',
       education_level: '',
       education_school: '',
       education_major: '',
@@ -259,6 +263,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
         current_salary: employee.current_salary,
         resident_number: employee.resident_number || '',
         address: employee.address || '',
+        birth_date: employee.birth_date || '',
         education_level: employee.education_level || '',
         education_school: employee.education_school || '',
         education_major: employee.education_major || '',
@@ -660,6 +665,18 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      생년월일
+                    </label>
+                    <input
+                      type="date"
+                      {...register('birth_date')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">생일 알림을 위해 입력해주세요</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       입사일 <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -672,6 +689,41 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
                     {errors.hire_date && (
                       <p className="text-red-500 text-xs mt-1">{errors.hire_date.message}</p>
                     )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      계약 시작일
+                    </label>
+                    <input
+                      type="date"
+                      {...register('contract_start_date')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">계약 갱신 알림을 위해 입력해주세요</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      계약 종료일
+                    </label>
+                    <input
+                      type="date"
+                      {...register('contract_end_date')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      계약 갱신일
+                    </label>
+                    <input
+                      type="date"
+                      {...register('contract_renewal_date')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">계약 갱신 알림을 위해 입력해주세요</p>
                   </div>
 
                   <div>

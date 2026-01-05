@@ -94,3 +94,4 @@ FROM auth.users au
 LEFT JOIN user_roles ur ON au.id = ur.user_id
 ORDER BY ur.created_at DESC;
 
+

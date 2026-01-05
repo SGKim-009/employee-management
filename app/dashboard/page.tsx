@@ -6,9 +6,12 @@ import { employeeService } from '@/lib/supabaseClient';
 import { Employee } from '@/types/employee';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { Users, Building, Briefcase, TrendingUp, Calendar, UserCheck, UserX } from 'lucide-react';
+import { Users, Building, Briefcase, TrendingUp, Calendar, UserCheck, UserX, Download, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { generateReportData, downloadReportAsCSV, downloadReportAsJSON, downloadReportAsText } from '@/lib/reportUtils';
+import { checkAllNotifications, saveNotificationsToLocalStorage, loadNotificationsFromLocalStorage } from '@/lib/notificationUtils';
+import toast from 'react-hot-toast';
 
 interface DashboardStats {
   totalEmployees: number;
@@ -26,6 +29,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [reportMenuOpen, setReportMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -46,6 +50,29 @@ export default function DashboardPage() {
         }
 
         setEmployees(allEmployees);
+
+        // 모든 알림 체크 및 저장 (자격증 + 생일)
+        const newNotifications = checkAllNotifications(allEmployees);
+        const existingNotifications = loadNotificationsFromLocalStorage();
+        
+        // 새 알림과 기존 알림 병합 (중복 제거)
+        const notificationMap = new Map();
+        existingNotifications.forEach((n: any) => {
+          notificationMap.set(n.id, n);
+        });
+        newNotifications.forEach((n: any) => {
+          const existing = notificationMap.get(n.id);
+          if (existing) {
+            if (!existing.read) {
+              notificationMap.set(n.id, n);
+            }
+          } else {
+            notificationMap.set(n.id, n);
+          }
+        });
+        
+        const mergedNotifications = Array.from(notificationMap.values());
+        saveNotificationsToLocalStorage(mergedNotifications);
 
         // 통계 계산
         const activeEmployees = allEmployees.filter(e => e.status === 'active');
@@ -235,12 +262,107 @@ export default function DashboardPage() {
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">대시보드</h1>
                 <p className="text-gray-600 dark:text-gray-300">인사관리 시스템 통계 및 분석</p>
               </div>
-              <Link
-                href="/"
-                className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-              >
-                메인으로
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                {/* 리포트 다운로드 드롭다운 */}
+                <div className="relative">
+                  <button
+                    onClick={() => setReportMenuOpen(!reportMenuOpen)}
+                    className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    aria-label="리포트 다운로드"
+                    aria-expanded={reportMenuOpen}
+                  >
+                    <Download size={18} />
+                    리포트 다운로드
+                  </button>
+                  {reportMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setReportMenuOpen(false)}
+                      />
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 z-20">
+                        <div className="py-2">
+                          <button
+                            onClick={() => {
+                              if (!stats || !employees.length) {
+                                toast.error('리포트 데이터를 불러올 수 없습니다.');
+                                setReportMenuOpen(false);
+                                return;
+                              }
+                              try {
+                                const reportData = generateReportData(employees, stats);
+                                downloadReportAsCSV(reportData);
+                                toast.success('CSV 파일이 다운로드되었습니다.');
+                                setReportMenuOpen(false);
+                              } catch (error) {
+                                console.error('Error generating CSV report:', error);
+                                toast.error('리포트 생성 중 오류가 발생했습니다.');
+                                setReportMenuOpen(false);
+                              }
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                          >
+                            <FileText size={16} />
+                            CSV 다운로드
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!stats || !employees.length) {
+                                toast.error('리포트 데이터를 불러올 수 없습니다.');
+                                setReportMenuOpen(false);
+                                return;
+                              }
+                              try {
+                                const reportData = generateReportData(employees, stats);
+                                downloadReportAsJSON(reportData);
+                                toast.success('JSON 파일이 다운로드되었습니다.');
+                                setReportMenuOpen(false);
+                              } catch (error) {
+                                console.error('Error generating JSON report:', error);
+                                toast.error('리포트 생성 중 오류가 발생했습니다.');
+                                setReportMenuOpen(false);
+                              }
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                          >
+                            <FileText size={16} />
+                            JSON 다운로드
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (!stats || !employees.length) {
+                                toast.error('리포트 데이터를 불러올 수 없습니다.');
+                                setReportMenuOpen(false);
+                                return;
+                              }
+                              try {
+                                const reportData = generateReportData(employees, stats);
+                                downloadReportAsText(reportData);
+                                toast.success('텍스트 파일이 다운로드되었습니다.');
+                                setReportMenuOpen(false);
+                              } catch (error) {
+                                console.error('Error generating text report:', error);
+                                toast.error('리포트 생성 중 오류가 발생했습니다.');
+                                setReportMenuOpen(false);
+                              }
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                          >
+                            <FileText size={16} />
+                            텍스트 다운로드
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <Link
+                  href="/"
+                  className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                >
+                  메인으로
+                </Link>
+              </div>
             </div>
           </div>
 

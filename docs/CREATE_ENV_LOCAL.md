@@ -127,3 +127,4 @@ Get-ChildItem -Filter ".env.local" | Select-Object FullName
 4. 개발 서버를 재시작했는지 확인
 5. `.next` 폴더를 삭제했는지 확인
 
+

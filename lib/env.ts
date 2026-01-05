@@ -30,3 +30,4 @@ export const env = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: requiredEnvVars.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 } as const;
 
+

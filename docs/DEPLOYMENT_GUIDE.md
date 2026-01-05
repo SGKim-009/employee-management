@@ -306,8 +306,15 @@ output: 'standalone',
 
 ---
 
+## 7. 재배포
+
+이미 배포된 애플리케이션을 재배포하는 방법은 [재배포 가이드](./REDEPLOYMENT_GUIDE.md)를 참고하세요.
+
+---
+
 ## 참고 자료
 
+- [재배포 가이드](./REDEPLOYMENT_GUIDE.md) - 재배포 방법 상세 안내
 - [Vercel 배포 문서](https://vercel.com/docs)
 - [Next.js 배포 가이드](https://nextjs.org/docs/deployment)
 - [Supabase 인증 설정](https://supabase.com/docs/guides/auth)

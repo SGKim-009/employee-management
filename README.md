@@ -4,22 +4,53 @@ Supabase와 Next.js로 구축한 직원 관리 시스템입니다.
 
 ## 주요 기능
 
+### 핵심 기능
 - ✅ 직원 정보 관리 (CRUD)
 - ✅ 인증 시스템 (Supabase Auth)
 - ✅ 역할 기반 접근 제어 (RBAC)
 - ✅ 급여 및 인사 변동 이력 관리
 - ✅ 자격증 및 경력 관리
 - ✅ 프로필 이미지 업로드
-- ✅ 검색 및 필터링
+
+### UI/UX
 - ✅ 반응형 디자인
+- ✅ 다크 모드 지원
+- ✅ 고급 검색 및 필터링
+- ✅ 필터 프리셋 저장
+- ✅ 무한 스크롤
+- ✅ 성능 최적화
+
+### 대시보드 및 분석
+- ✅ 통계 대시보드
+- ✅ 차트/그래프 (부서별, 직급별, 입사 추이, 급여 분포)
+- ✅ 리포트 생성 (CSV, JSON, 텍스트)
+
+### 알림 시스템
+- ✅ 자격증 만료 알림
+- ✅ 계약 갱신 알림
+- ✅ 생일 알림
+- ✅ 알림 목록 페이지
+
+### 파일 관리
+- ✅ 문서 업로드/다운로드
+- ✅ 이력서 버전 관리
+- ✅ 계약서 만료일 관리
+
+### 엑셀 연동
+- ✅ 엑셀 파일 임포트 (일괄 직원 등록)
+- ✅ 엑셀 템플릿 제공
+- ✅ 직원 목록 엑셀 다운로드
 
 ## 기술 스택
 
-- **프레임워크**: Next.js 16 (App Router)
+- **프레임워크**: Next.js 16.1.1 (App Router)
 - **언어**: TypeScript
 - **백엔드**: Supabase (Database, Auth, Storage)
-- **스타일링**: Tailwind CSS
+- **스타일링**: Tailwind CSS 4
 - **폼 관리**: React Hook Form + Zod
+- **차트**: Recharts
+- **엑셀**: xlsx
+- **아이콘**: Lucide React
 - **알림**: react-hot-toast
 
 ## 시작하기
@@ -71,15 +102,13 @@ npm run dev
 
 ## 문서
 
-- [**수동 설정 가이드**](./docs/MANUAL_SETUP_GUIDE.md) ⭐ **시작하기 전 필수 읽기**
-- [**배포 가이드**](./docs/DEPLOYMENT_GUIDE.md) 🚀 **배포하려면 여기를 확인하세요**
-- [**다른 PC에서 작업하기**](./docs/MULTI_PC_SETUP.md) 💻 **여러 PC에서 코드 편집하려면**
-- [**RLS 정책 설정 빠른 가이드**](./docs/QUICK_START_RLS.md) ⚡ **RLS 설정만 빠르게 하려면**
-- [보안 설정 가이드](./docs/SECURITY_SETUP.md)
-- [관리자 계정 설정](./docs/ADMIN_ACCOUNT_SETUP.md)
-- [테스트 가이드](./docs/TESTING_GUIDE.md)
-- [Phase 1 완료 요약](./docs/PHASE1_SUMMARY.md)
-- [개발 작업 목록](./TASK.md)
+- [**빠른 시작 가이드**](./docs/QUICK_START.md) ⚡ **5분 안에 시작하기**
+- [**프로젝트 요약**](./docs/PROJECT_SUMMARY.md) 📊 **전체 기능 및 진행 현황**
+- [**Supabase 설정 가이드**](./docs/SUPABASE_SETUP_GUIDE.md) 🗄️ **데이터베이스 및 Storage 설정**
+- [**배포 가이드**](./docs/DEPLOYMENT_GUIDE.md) 🚀 **프로덕션 배포**
+- [**재배포 가이드**](./docs/REDEPLOYMENT_GUIDE.md) 🔄 **재배포 방법**
+- [**다중 PC 개발 환경 설정**](./docs/MULTI_PC_SETUP.md) 💻 **여러 PC에서 코드 편집**
+- [개발 작업 목록](./TASK.md) - 전체 작업 목록 및 진행률
 
 ## Learn More
 

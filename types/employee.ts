@@ -33,9 +33,15 @@ export interface Employee {
   resignation_date?: string;
   current_salary: number;
   
+  // 계약 정보
+  contract_start_date?: string; // 계약 시작일
+  contract_end_date?: string; // 계약 종료일
+  contract_renewal_date?: string; // 계약 갱신일
+  
   // 🆕 개인정보
   resident_number?: string; // 주민등록번호
   address?: string; // 주소
+  birth_date?: string; // 생년월일 (YYYY-MM-DD 형식)
   
   // 학력
   education_level?: string;

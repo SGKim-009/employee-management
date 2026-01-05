@@ -25,7 +25,7 @@ const EmployeeDetails = dynamic(() => import('@/components/EmployeeDetails'), {
 const EmployeePrintCard = dynamic(() => import('@/components/EmployeePrintCard'), {
   ssr: false,
 });
-import { Plus, Users, Search, ChevronLeft, ChevronRight, UserX, LogOut, Filter, X, Save, Bookmark, Trash2 } from 'lucide-react';
+import { Plus, Users, Search, ChevronLeft, ChevronRight, UserX, LogOut, Filter, X, Save, Bookmark, Trash2, FileSpreadsheet, Download } from 'lucide-react';
 import Link from 'next/link';
 import { showToast } from '@/lib/toast';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -33,6 +33,7 @@ import EmployeeCardSkeleton from '@/components/EmployeeCardSkeleton';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/lib/auth';
 import { useUserRole, hasPermission } from '@/lib/userRole';
+import { exportEmployeesToExcel } from '@/lib/excelService';
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -393,6 +394,36 @@ function HomeContent() {
     }
   }, [editingEmployee, fetchEmployees]);
 
+  // 엑셀 다운로드
+  const handleExportExcel = useCallback(async () => {
+    try {
+      showToast.info('직원 데이터를 불러오는 중...');
+      
+      // 모든 직원 데이터 가져오기 (페이지네이션 없이)
+      let allEmployees: Employee[] = [];
+      let currentPage = 1;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const result = await employeeService.getAll(currentPage, 100, searchTerm, false, filters, sortBy);
+        allEmployees = [...allEmployees, ...result.data];
+        hasMore = currentPage < result.totalPages;
+        currentPage++;
+      }
+      
+      if (allEmployees.length === 0) {
+        showToast.error('내보낼 직원 데이터가 없습니다.');
+        return;
+      }
+      
+      exportEmployeesToExcel(allEmployees);
+      showToast.success(`${allEmployees.length}명의 직원 데이터가 엑셀 파일로 다운로드되었습니다.`);
+    } catch (err) {
+      console.error('Error exporting to Excel:', err);
+      showToast.error('엑셀 다운로드에 실패했습니다.');
+    }
+  }, [searchTerm, filters, sortBy]);
+
   // 직원 삭제
   const handleDelete = useCallback(async (id: string) => {
     if (!confirm('정말로 이 직원을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) return;
@@ -498,6 +529,15 @@ function HomeContent() {
                 <UserX size={20} />
                 퇴사자 관리
               </Link>
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 text-sm md:text-base touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                aria-label="엑셀 다운로드"
+              >
+                <Download size={18} className="md:w-5 md:h-5" />
+                <span className="hidden sm:inline">엑셀 다운로드</span>
+                <span className="sm:hidden">다운로드</span>
+              </button>
               {canWrite && (
                 <button
                   onClick={() => setShowForm(true)}

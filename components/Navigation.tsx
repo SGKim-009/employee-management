@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/lib/userRole';
 import ProtectedRoute from './ProtectedRoute';
-import { Users, UserX, LogOut, Settings, TestTube, Menu, X } from 'lucide-react';
+import { Users, UserX, LogOut, Settings, TestTube, Menu, X, Bell, FileSpreadsheet } from 'lucide-react';
 import { showToast } from '@/lib/toast';
 import ThemeToggle from './ThemeToggle';
+import { getUnreadNotificationCount } from '@/lib/notificationUtils';
 
 export default function Navigation() {
   const { user, signOut } = useAuth();
@@ -16,6 +17,29 @@ export default function Navigation() {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+  // 알림 개수 업데이트
+  useEffect(() => {
+    const updateNotificationCount = () => {
+      const count = getUnreadNotificationCount();
+      setUnreadNotificationCount(count);
+    };
+
+    // 초기 로드
+    updateNotificationCount();
+
+    // 주기적으로 업데이트 (30초마다)
+    const interval = setInterval(updateNotificationCount, 30000);
+
+    // storage 이벤트 리스너 (다른 탭에서 알림이 변경될 때)
+    window.addEventListener('storage', updateNotificationCount);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', updateNotificationCount);
+    };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -80,6 +104,15 @@ export default function Navigation() {
                 <UserX size={18} />
                 퇴사자 관리
               </Link>
+              <Link
+                href="/import"
+                className={`px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname === '/import' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <FileSpreadsheet size={18} />
+                엑셀 임포트
+              </Link>
             </div>
           </div>
 
@@ -109,6 +142,20 @@ export default function Navigation() {
 
             {/* 테마 전환 버튼 */}
             <ThemeToggle />
+
+            {/* 알림 버튼 */}
+            <Link
+              href="/notifications"
+              className="relative p-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title="알림"
+            >
+              <Bell size={20} />
+              {unreadNotificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
+                </span>
+              )}
+            </Link>
 
             {/* 사용자 정보 (데스크톱만) */}
             <div className="hidden md:flex items-center gap-3">
@@ -190,11 +237,45 @@ export default function Navigation() {
                 <UserX size={18} />
                 퇴사자 관리
               </Link>
+              <Link
+                href="/import"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname === '/import' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <FileSpreadsheet size={18} />
+                엑셀 임포트
+              </Link>
 
               {/* 모바일 테마 전환 버튼 */}
               <div className="px-4 py-2">
                 <ThemeToggle />
               </div>
+
+              {/* 모바일 알림 링크 */}
+              <Link
+                href="/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname === '/notifications' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <div className="relative">
+                  <Bell size={18} />
+                  {unreadNotificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
+                    </span>
+                  )}
+                </div>
+                알림
+                {unreadNotificationCount > 0 && (
+                  <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                    {unreadNotificationCount}
+                  </span>
+                )}
+              </Link>
 
               {/* 모바일 사용자 정보 */}
               {user && (

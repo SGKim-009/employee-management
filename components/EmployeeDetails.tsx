@@ -5,7 +5,8 @@ import { useState, useEffect, useMemo, memo } from 'react';
 import { Employee, SalaryHistory, PositionHistory } from '@/types/employee';
 import { employeeService } from '@/lib/supabaseClient';
 import { X, User, Mail, Phone, Briefcase, Calendar, TrendingUp
-    , GraduationCap, Award, History, Building } from 'lucide-react';
+    , GraduationCap, Award, History, Building, FileText } from 'lucide-react';
+import Link from 'next/link';
 
 interface EmployeeDetailsProps {
   employee: Employee;
@@ -375,13 +376,23 @@ function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
 
         {/* 푸터 */}
         <div className="border-t p-4 bg-gray-50">
-          <button
-            onClick={onClose}
-            className="w-full px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-            aria-label="상세보기 닫기"
-          >
-            닫기
-          </button>
+          <div className="flex gap-3">
+            <Link
+              href={`/employees/${employee.id}/files`}
+              className="flex-1 px-6 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium min-h-[44px] flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              onClick={onClose}
+            >
+              <FileText size={18} />
+              파일 관리
+            </Link>
+            <button
+              onClick={onClose}
+              className="flex-1 px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              aria-label="상세보기 닫기"
+            >
+              닫기
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -218,3 +218,306 @@
 
 **마지막 업데이트**: 2024년 (현재 세션)
 
+---
+
+## 2024년 (현재 세션) - 리포트 생성 기능 구현
+
+**질문**: "진행 사항 이어서 계속해"
+
+**응답**: Phase 3.1.3 리포트 생성 기능 구현 완료
+
+**구현 내용**:
+1. **리포트 유틸리티 함수 생성** (`lib/reportUtils.ts`):
+   - `generateReportData`: 리포트 데이터 생성 함수
+   - `downloadReportAsCSV`: CSV 형식 다운로드 (한글 깨짐 방지 BOM 추가)
+   - `downloadReportAsJSON`: JSON 형식 다운로드
+   - `downloadReportAsText`: 텍스트 형식 다운로드 (요약 통계 포함)
+
+2. **대시보드 페이지에 리포트 다운로드 기능 추가**:
+   - 리포트 다운로드 버튼 추가
+   - 클릭 기반 드롭다운 메뉴 (CSV, JSON, 텍스트)
+   - 모바일 대응 (클릭 외부 영역 클릭 시 닫기)
+   - Toast 알림으로 다운로드 성공/실패 피드백
+
+**완료된 작업**:
+- Phase 3.1.3 리포트 생성 기능 구현 완료
+- Phase 3.1 전체 진행률: 100% (9/9 완료)
+
+**다음 단계**:
+- Phase 3.2 알림 및 알림 기능 구현
+- 리포트 생성 및 다운로드 테스트
+
+---
+
+## 2024년 (현재 세션) - 알림 기능 구현
+
+**질문**: "계속 진행 해"
+
+**응답**: Phase 3.2.1 자격증 만료 알림 기능 구현 완료
+
+**구현 내용**:
+1. **알림 유틸리티 함수** (`lib/notificationUtils.ts`):
+   - `checkCertificationExpiry`: 자격증 만료일 체크 및 알림 생성
+   - 만료 임박 알림 (30일 전, 7일 전)
+   - 이미 만료된 자격증 알림
+   - localStorage 기반 알림 저장/관리
+   - 읽음 처리, 삭제, 읽지 않은 알림 개수 조회 기능
+
+2. **알림 목록 페이지** (`app/notifications/page.tsx`):
+   - 자격증 만료 알림 목록 표시
+   - 우선순위별 색상 및 아이콘 표시
+   - 읽음/읽지 않음 상태 관리
+   - 개별 알림 읽음 처리 및 삭제
+   - 모든 알림 읽음 처리 기능
+
+3. **네비게이션 알림 배지** (`components/Navigation.tsx`):
+   - 알림 아이콘 및 읽지 않은 알림 개수 배지 표시
+   - 30초마다 알림 개수 자동 업데이트
+   - storage 이벤트 리스너로 다른 탭에서의 변경 감지
+   - 모바일 메뉴에도 알림 링크 추가
+
+4. **대시보드 알림 체크** (`app/dashboard/page.tsx`):
+   - 대시보드 로드 시 자동으로 자격증 만료 알림 체크
+   - 새 알림과 기존 알림 병합 (중복 제거)
+
+**완료된 작업**:
+- Phase 3.2.1 자격증 만료 알림 기능 구현 완료
+- Phase 3.2 진행률: 33% (2/6 완료)
+
+**다음 단계**:
+- Phase 3.2.2 계약 갱신 알림 (계약 관련 필드 추가 필요)
+- Phase 3.2.3 생일 알림 (생일 필드 추가 필요)
+- 알림 기능 테스트
+
+---
+
+## 2024년 (현재 세션) - 생일 알림 기능 구현
+
+**질문**: "계속 진행해줘"
+
+**응답**: Phase 3.2.3 생일 알림 기능 구현 완료
+
+**구현 내용**:
+1. **생일 필드 추가**:
+   - `types/employee.ts`: `birth_date?: string` 필드 추가
+   - `types/employee.schema.ts`: Zod 스키마에 `birth_date` 필드 추가
+   - `components/EmployeeForm.tsx`: 생일 입력 필드 추가 (전화번호 다음)
+
+2. **생일 알림 로직** (`lib/notificationUtils.ts`):
+   - `checkBirthdayNotifications`: 생일 알림 체크 함수
+   - 오늘 생일 알림 (우선순위: medium)
+   - 7일 후 생일 알림 (우선순위: low)
+   - `checkAllNotifications`: 자격증 + 생일 알림 통합 체크 함수
+
+3. **알림 통합**:
+   - `app/notifications/page.tsx`: `checkAllNotifications` 사용으로 생일 알림도 표시
+   - `app/dashboard/page.tsx`: 대시보드 로드 시 생일 알림도 체크
+
+**완료된 작업**:
+- Phase 3.2.3 생일 알림 기능 구현 완료
+- Phase 3.2 진행률: 67% (4/6 완료)
+
+**다음 단계**:
+- Phase 3.2.2 계약 갱신 알림 (계약 관련 필드 추가 필요)
+- 알림 기능 테스트
+
+---
+
+## 2024년 (현재 세션) - 계약 갱신 알림 기능 구현
+
+**질문**: "알림 부터 진행해"
+
+**응답**: Phase 3.2.2 계약 갱신 알림 기능 구현 완료
+
+**구현 내용**:
+1. **계약 관련 필드 추가**:
+   - `types/employee.ts`: `contract_start_date`, `contract_end_date`, `contract_renewal_date` 필드 추가
+   - `types/employee.schema.ts`: Zod 스키마에 계약 관련 필드 추가
+   - `components/EmployeeForm.tsx`: 계약 시작일, 계약 종료일, 계약 갱신일 입력 필드 추가 (입사일 다음)
+
+2. **계약 갱신 알림 로직** (`lib/notificationUtils.ts`):
+   - `checkContractRenewalNotifications`: 계약 갱신 알림 체크 함수
+   - 계약 갱신일이 있으면 사용, 없으면 계약 종료일 사용
+   - 이미 만료된 계약 알림 (우선순위: urgent)
+   - 7일 이내 갱신 예정 알림 (우선순위: high)
+   - 30일 이내 갱신 예정 알림 (우선순위: medium)
+   - `checkAllNotifications`: 자격증 + 생일 + 계약 갱신 알림 통합 체크 함수
+
+3. **알림 통합**:
+   - `app/notifications/page.tsx`: `checkAllNotifications` 사용으로 계약 갱신 알림도 표시
+   - `app/dashboard/page.tsx`: 대시보드 로드 시 계약 갱신 알림도 체크
+
+**완료된 작업**:
+- Phase 3.2.2 계약 갱신 알림 기능 구현 완료
+- Phase 3.2 진행률: 100% (6/6 완료)
+
+**다음 단계**:
+- Phase 3.3 파일 관리 기능 구현
+- 알림 기능 테스트
+
+---
+
+## 2024년 (현재 세션) - 파일 관리 기능 구현
+
+**질문**: "진행해"
+
+**응답**: Phase 3.3.1 문서 업로드/다운로드 기능 구현 완료
+
+**구현 내용**:
+1. **파일 서비스** (`lib/fileService.ts`):
+   - `uploadEmployeeFile`: 직원별 파일 업로드 (Supabase Storage)
+   - `getEmployeeFiles`: 직원별 파일 목록 조회
+   - `getFileDownloadUrl`: 파일 다운로드 URL 생성
+   - `deleteEmployeeFile`: 파일 삭제 (Storage + DB)
+   - `getFileTypeLabel`, `formatFileSize`: 유틸리티 함수
+
+2. **파일 관리 페이지** (`app/employees/[id]/files/page.tsx`):
+   - 직원별 파일 목록 표시
+   - 파일 타입별 필터링 (전체, 문서, 이력서, 계약서, 기타)
+   - 파일 업로드 모달
+   - 파일 다운로드 및 삭제 기능
+   - 파일 카드 UI (파일명, 타입, 크기, 업로드일)
+
+3. **데이터베이스 스키마** (`docs/sql/employee_files_table.sql`):
+   - `employee_files` 테이블 생성
+   - RLS 정책 설정
+   - 인덱스 생성
+   - Storage 버킷 설정 가이드
+
+4. **EmployeeDetails 통합**:
+   - 파일 관리 페이지로 이동하는 링크 추가
+
+**완료된 작업**:
+- Phase 3.3.1 문서 업로드/다운로드 기능 구현 완료
+- Phase 3.3 진행률: 43% (3/7 완료)
+
+**다음 단계**:
+- Phase 3.3.2 이력서 관리 (이미 파일 타입으로 포함됨)
+- Phase 3.3.3 계약서 관리 (이미 파일 타입으로 포함됨)
+- Supabase Storage 버킷 생성 및 테이블 생성 필요
+- 파일 관리 기능 테스트
+
+---
+
+## 2024년 (현재 세션) - 이력서 및 계약서 관리 기능 구현
+
+**질문**: "진행해"
+
+**응답**: Phase 3.3.2 이력서 관리 및 3.3.3 계약서 관리 기능 구현 완료
+
+**구현 내용**:
+1. **데이터베이스 스키마 업데이트** (`docs/sql/employee_files_table.sql`):
+   - `version_number`: 이력서 버전 번호 필드 추가
+   - `is_latest_version`: 최신 버전 여부 필드 추가
+   - `expiry_date`: 계약서 만료일 필드 추가
+
+2. **파일 서비스 확장** (`lib/fileService.ts`):
+   - `uploadEmployeeFile`: 이력서 업로드 시 자동 버전 번호 할당
+   - `setResumeAsLatestVersion`: 이력서 최신 버전으로 설정
+   - `updateContractExpiryDate`: 계약서 만료일 업데이트
+   - `EmployeeFile` 인터페이스에 버전 및 만료일 필드 추가
+
+3. **파일 관리 페이지 개선** (`app/employees/[id]/files/page.tsx`):
+   - 이력서 버전 번호 및 최신 버전 배지 표시
+   - 계약서 만료일 표시
+   - 이력서 최신 버전으로 설정 버튼
+   - 계약서 만료일 설정/수정 버튼 및 모달
+   - 업로드 모달에 계약서 만료일 입력 필드 추가
+
+**완료된 작업**:
+- Phase 3.3.2 이력서 관리 기능 구현 완료
+- Phase 3.3.3 계약서 관리 기능 구현 완료
+- Phase 3.3 진행률: 71% (5/7 완료)
+
+**다음 단계**:
+- Phase 3.4 엑셀 연동 기능 구현
+- Supabase에서 `employee_files` 테이블 업데이트 및 Storage 버킷 생성
+- 파일 관리 기능 테스트
+
+---
+
+## 2024년 (현재 세션) - 프로젝트 마무리 및 문서화
+
+**질문**: "진행해"
+
+**응답**: 프로젝트 마무리 작업 및 문서화 완료
+
+**구현 내용**:
+1. **프로젝트 요약 문서** (`docs/PROJECT_SUMMARY.md`):
+   - 전체 기능 목록
+   - 기술 스택
+   - 프로젝트 구조
+   - 진행 현황
+   - 다음 단계 제안
+
+2. **Supabase 설정 가이드** (`docs/SUPABASE_SETUP_GUIDE.md`):
+   - 기본 설정 방법
+   - 데이터베이스 테이블 생성
+   - Storage 버킷 생성
+   - RLS 정책 설정
+   - 사용자 역할 설정
+   - 문제 해결 가이드
+
+3. **빠른 시작 가이드** (`docs/QUICK_START.md`):
+   - 5분 안에 시작하기
+   - 설정 확인 체크리스트
+   - 주요 기능 테스트 방법
+   - 문제 해결 가이드
+
+4. **문서 업데이트**:
+   - `README.md`: 최신 기능 목록 및 문서 링크 추가
+   - `TASK.md`: 진행률 업데이트 (Phase 3: 90%, 전체: 60%)
+   - `docs/sql/employee_files_table.sql`: 기존 테이블 업데이트 가이드 추가
+
+**완료된 작업**:
+- 프로젝트 문서화 완료
+- Supabase 설정 가이드 작성
+- 빠른 시작 가이드 작성
+- 전체 진행률: 60% (87/145 완료)
+
+**다음 단계**:
+- Supabase 설정 완료 (필수)
+- 기능 테스트
+- 프로덕션 배포
+
+---
+
+## 2024년 (현재 세션) - 엑셀 연동 기능 구현
+
+**질문**: "진행해"
+
+**응답**: Phase 3.4 엑셀 연동 기능 구현 완료
+
+**구현 내용**:
+1. **xlsx 패키지 설치**:
+   - `npm install xlsx` 완료
+
+2. **엑셀 서비스 구현** (`lib/excelService.ts`):
+   - `parseExcelFile`: 엑셀 파일 파싱 기능
+   - `mapExcelRowToEmployee`: 엑셀 데이터를 Employee 형식으로 변환
+   - `importEmployeesFromExcel`: 엑셀 데이터 임포트 (중복 체크 포함)
+   - `exportEmployeesToExcel`: 직원 목록을 엑셀 형식으로 익스포트
+   - `generateExcelTemplate`: 엑셀 임포트 템플릿 생성
+
+3. **엑셀 임포트 페이지** (`app/import/page.tsx`):
+   - 파일 업로드 UI
+   - 템플릿 다운로드 기능
+   - 임포트 결과 리포트 (성공/실패 통계, 오류 상세, 임포트된 직원 목록)
+
+4. **엑셀 익스포트 기능** (`app/page.tsx`):
+   - 메인 페이지에 엑셀 다운로드 버튼 추가
+   - 현재 필터/검색 조건에 맞는 모든 직원 데이터 다운로드
+
+5. **네비게이션 업데이트** (`components/Navigation.tsx`):
+   - 엑셀 임포트 페이지 링크 추가 (데스크톱 및 모바일)
+
+**완료된 작업**:
+- Phase 3.4 엑셀 연동 기능 구현 완료
+- Phase 3.4 진행률: 86% (6/7 완료)
+- Phase 3 전체 진행률: 90% (26/29 완료)
+
+**다음 단계**:
+- Phase 3의 테스트 항목들 (선택사항)
+- Phase 4 고급 기능 (조직도, 평가 시스템, 휴가 관리, 급여 관리)
+- 또는 프로젝트 마무리 및 배포 준비
+
