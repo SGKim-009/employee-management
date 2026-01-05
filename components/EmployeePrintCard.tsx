@@ -376,7 +376,9 @@ function PrintCardContent({
           <p className="text-3xl font-bold text-blue-600">
             {employee.current_salary.toLocaleString()}원
           </p>
-          <p className="text-sm text-gray-600 mt-1">월급 기준</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {employee.salary_type === 'hourly' ? '시급 기준' : '연봉 기준'}
+          </p>
         </div>
       </div>
 

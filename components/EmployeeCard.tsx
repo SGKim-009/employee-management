@@ -96,13 +96,6 @@ function EmployeeCard({ employee, onEdit, onDelete, onViewDetails, onPrintCard }
             <Clock size={14} className="text-purple-600 dark:text-purple-400" />
             <span className="font-semibold">근속: {tenure}</span>
           </div>
-          
-          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm">
-            <TrendingUp size={14} className="text-green-600 dark:text-green-400" />
-            <span className="font-semibold">
-              {employee.current_salary.toLocaleString()}원
-            </span>
-          </div>
         </div>
 
         {/* 액션 버튼 */}

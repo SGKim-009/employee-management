@@ -47,6 +47,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
       hire_date: '',
       resignation_date: '',
       current_salary: 0,
+      salary_type: 'annual' as 'annual' | 'hourly',
       contract_start_date: '',
       contract_end_date: '',
       contract_renewal_date: '',
@@ -225,6 +226,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
     hire_date: '',
     resignation_date: '',
     current_salary: 0,
+    salary_type: 'annual' as 'annual' | 'hourly',
     education_level: '',
     education_school: '',
     education_major: '',
@@ -261,6 +263,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
         hire_date: employee.hire_date,
         resignation_date: employee.resignation_date || '',
         current_salary: employee.current_salary,
+        salary_type: (employee.salary_type || 'annual') as 'annual' | 'hourly',
         resident_number: employee.resident_number || '',
         address: employee.address || '',
         birth_date: employee.birth_date || '',
@@ -288,6 +291,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
         hire_date: employee.hire_date,
         resignation_date: employee.resignation_date || '',
         current_salary: employee.current_salary,
+        salary_type: (employee.salary_type || 'annual') as 'annual' | 'hourly',
         education_level: employee.education_level || '',
         education_school: employee.education_school || '',
         education_major: employee.education_major || '',
@@ -1115,9 +1119,38 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
               <div className="space-y-6">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">급여 정보</h3>
+                  
+                  {/* 급여 타입 선택 */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      급여 타입 <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          {...register('salary_type')}
+                          value="annual"
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">연봉</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          {...register('salary_type')}
+                          value="hourly"
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">시급</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 급여 입력 */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      현재 급여 (월급) <span className="text-red-500">*</span>
+                      현재 급여 ({watch('salary_type') === 'annual' ? '연봉' : '시급'}) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -1125,7 +1158,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         errors.current_salary ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="3500000"
+                      placeholder={watch('salary_type') === 'annual' ? '50000000' : '20000'}
                       min="0"
                     />
                     {errors.current_salary && (
@@ -1133,6 +1166,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
                     )}
                     <p className="text-sm text-gray-500 mt-1">
                       {watch('current_salary')?.toLocaleString() || 0}원
+                      {watch('salary_type') === 'annual' ? ' (연봉)' : ' (시급)'}
                     </p>
                   </div>
                 </div>

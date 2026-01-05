@@ -110,6 +110,7 @@ function mapExcelRowToEmployee(row: any, rowIndex: number): { employee: Partial<
       hire_date: formatDate(row['입사일'] || row['hire_date'] || ''),
       resignation_date: row['퇴사일'] || row['resignation_date'] ? formatDate(row['퇴사일'] || row['resignation_date']) : undefined,
       current_salary: salary,
+      salary_type: (row['급여타입'] || row['salary_type'] || 'annual') as 'annual' | 'hourly',
       resident_number: row['주민등록번호'] || row['resident_number'] || undefined,
       address: row['주소'] || row['address'] || undefined,
       birth_date: row['생년월일'] || row['birth_date'] ? formatDate(row['생년월일'] || row['birth_date']) : undefined,
@@ -251,6 +252,7 @@ export function exportEmployeesToExcel(employees: Employee[]): void {
     '퇴사일': emp.resignation_date || '',
     '상태': emp.status,
     '급여': emp.current_salary,
+    '급여타입': emp.salary_type === 'hourly' ? '시급' : '연봉',
     '주민등록번호': emp.resident_number || '',
     '주소': emp.address || '',
     '생년월일': emp.birth_date || '',
@@ -288,7 +290,8 @@ export function generateExcelTemplate(): void {
     '입사일': '2024-01-01',
     '퇴사일': '',
     '상태': 'active',
-    '급여': '5000000',
+    '급여': '50000000',
+    '급여타입': '연봉',
     '주민등록번호': '',
     '주소': '',
     '생년월일': '1990-01-01',
@@ -305,4 +308,5 @@ export function generateExcelTemplate(): void {
 
   XLSX.writeFile(workbook, 'employee-import-template.xlsx');
 }
+
 

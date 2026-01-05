@@ -156,6 +156,7 @@ function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
                     <p className="flex items-center gap-2 text-gray-800 font-semibold">
                       <TrendingUp size={16} className="text-green-600" />
                       {employee.current_salary.toLocaleString()}원
+                      {employee.salary_type === 'hourly' ? ' (시급)' : ' (연봉)'}
                     </p>
                   </div>
                   <div>

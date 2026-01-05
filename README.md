@@ -103,6 +103,12 @@ npm run dev
 ## 문서
 
 - [**빠른 시작 가이드**](./docs/QUICK_START.md) ⚡ **5분 안에 시작하기**
+- [**사용자 매뉴얼**](./docs/USER_MANUAL.md) 📖 **사용자 가이드 및 FAQ**
+- [**개발자 가이드**](./docs/DEVELOPER_GUIDE.md) 👨‍💻 **개발 환경 및 코딩 컨벤션**
+- [**API 문서**](./docs/API_DOCUMENTATION.md) 🔌 **API 엔드포인트 및 서비스 함수**
+- [**CI/CD 가이드**](./docs/CI_CD_GUIDE.md) 🔄 **GitHub Actions 및 자동 배포**
+- [**환경별 설정 가이드**](./docs/ENVIRONMENT_SETUP.md) ⚙️ **개발/스테이징/프로덕션 환경 설정**
+- [**롤백 가이드**](./docs/ROLLBACK_GUIDE.md) 🔙 **배포 롤백 전략 및 실행 방법**
 - [**프로젝트 요약**](./docs/PROJECT_SUMMARY.md) 📊 **전체 기능 및 진행 현황**
 - [**Supabase 설정 가이드**](./docs/SUPABASE_SETUP_GUIDE.md) 🗄️ **데이터베이스 및 Storage 설정**
 - [**배포 가이드**](./docs/DEPLOYMENT_GUIDE.md) 🚀 **프로덕션 배포**

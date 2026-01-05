@@ -128,3 +128,4 @@ Get-ChildItem -Filter ".env.local" | Select-Object FullName
 5. `.next` 폴더를 삭제했는지 확인
 
 
+

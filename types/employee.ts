@@ -32,6 +32,7 @@ export interface Employee {
   hire_date: string;
   resignation_date?: string;
   current_salary: number;
+  salary_type?: 'annual' | 'hourly'; // 급여 타입: 연봉 또는 시급
   
   // 계약 정보
   contract_start_date?: string; // 계약 시작일

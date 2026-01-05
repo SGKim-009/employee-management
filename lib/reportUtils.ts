@@ -186,3 +186,4 @@ export function downloadReportAsText(reportData: ReportData) {
   URL.revokeObjectURL(url);
 }
 
+

@@ -33,6 +33,7 @@ export const employeeSchema = z.object({
   hire_date: z.string().min(1, '입사일을 입력하세요'),
   resignation_date: z.string().optional(),
   current_salary: z.number().min(0, '급여는 0 이상이어야 합니다'),
+  salary_type: z.enum(['annual', 'hourly']).optional().default('annual'),
   contract_start_date: z.string().optional(),
   contract_end_date: z.string().optional(),
   contract_renewal_date: z.string().optional(),

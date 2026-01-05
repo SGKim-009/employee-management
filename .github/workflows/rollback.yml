@@ -1,0 +1,56 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Vercel Deployment URL to rollback to'
+        required: true
+        type: string
+      environment:
+        description: 'Environment (production or preview)'
+        required: true
+        type: choice
+        options:
+          - production
+          - preview
+        default: production
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Rollback deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "Rolling back to deployment: ${{ github.event.inputs.deployment_url }}"
+          vercel rollback ${{ github.event.inputs.deployment_url }} --token=$VERCEL_TOKEN --yes
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            vercel promote ${{ github.event.inputs.deployment_url }} --token=$VERCEL_TOKEN --yes
+          fi
+
+      - name: Notify rollback completion
+        if: success()
+        run: |
+          echo "✅ Rollback completed successfully"
+          echo "Deployment URL: ${{ github.event.inputs.deployment_url }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+
+

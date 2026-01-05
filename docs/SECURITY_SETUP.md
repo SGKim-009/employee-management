@@ -187,3 +187,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - 프로덕션 환경에서는 더 엄격한 정책을 적용하는 것을 권장합니다
 
 
+
