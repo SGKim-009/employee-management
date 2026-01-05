@@ -186,4 +186,110 @@ export function downloadReportAsText(reportData: ReportData) {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * CSV 리포트 생성 (테스트용 - 문자열 반환)
+ */
+export function generateCSVReport(reportData: ReportData): string {
+  const headers = [
+    '사원번호',
+    '이름',
+    '이메일',
+    '전화번호',
+    '부서',
+    '직급',
+    '직책',
+    '입사일',
+    '상태',
+    '퇴사일',
+    '현재 급여',
+    '학력',
+    '학교',
+    '전공',
+    '졸업년도',
+  ];
 
+  const rows = reportData.employees.map(emp => [
+    emp.employee_number || '',
+    emp.name || '',
+    emp.email || '',
+    emp.phone || '',
+    emp.department || '',
+    emp.rank || '',
+    emp.position || '',
+    emp.hire_date || '',
+    emp.status || '',
+    emp.resignation_date || '',
+    emp.current_salary?.toString() || '',
+    emp.education_level || '',
+    emp.education_school || '',
+    emp.education_major || '',
+    emp.education_graduation_year?.toString() || '',
+  ]);
+
+  const csvContent = [
+    '\uFEFF' + headers.join(','),
+    ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+  ].join('\n');
+
+  return csvContent;
+}
+
+/**
+ * JSON 리포트 생성 (테스트용 - 문자열 반환)
+ */
+export function generateJSONReport(reportData: ReportData): string {
+  return JSON.stringify(reportData, null, 2);
+}
+
+/**
+ * 텍스트 리포트 생성 (테스트용 - 문자열 반환)
+ */
+export function generateTextReport(reportData: ReportData): string {
+  const lines: string[] = [];
+  
+  lines.push('='.repeat(60));
+  lines.push('인사관리 시스템 리포트');
+  lines.push('='.repeat(60));
+  lines.push(`생성일시: ${new Date(reportData.generatedAt).toLocaleString('ko-KR')}`);
+  lines.push('');
+  
+  lines.push('📊 요약 통계');
+  lines.push('-'.repeat(60));
+  lines.push(`전체 직원: ${reportData.summary.totalEmployees}명`);
+  lines.push(`재직 중: ${reportData.summary.activeEmployees}명`);
+  lines.push(`휴직 중: ${reportData.summary.inactiveEmployees}명`);
+  lines.push(`퇴사자: ${reportData.summary.resignedEmployees}명`);
+  lines.push(`최근 30일 입사: ${reportData.summary.recentHires}명`);
+  lines.push(`최근 30일 퇴사: ${reportData.summary.recentResignations}명`);
+  lines.push('');
+  
+  lines.push('🏢 부서별 분포');
+  lines.push('-'.repeat(60));
+  Object.entries(reportData.departmentDistribution)
+    .sort(([, a], [, b]) => b - a)
+    .forEach(([dept, count]) => {
+      lines.push(`${dept}: ${count}명`);
+    });
+  lines.push('');
+  
+  lines.push('👔 직급별 분포');
+  lines.push('-'.repeat(60));
+  Object.entries(reportData.rankDistribution)
+    .sort(([, a], [, b]) => b - a)
+    .forEach(([rank, count]) => {
+      lines.push(`${rank}: ${count}명`);
+    });
+  lines.push('');
+  
+  lines.push('👥 직원 목록');
+  lines.push('-'.repeat(60));
+  reportData.employees.forEach((emp, index) => {
+    lines.push(`${index + 1}. ${emp.name} (${emp.employee_number})`);
+    lines.push(`   부서: ${emp.department || '-'} | 직급: ${emp.rank || '-'} | 상태: ${emp.status || '-'}`);
+    if (emp.email) lines.push(`   이메일: ${emp.email}`);
+    if (emp.phone) lines.push(`   전화: ${emp.phone}`);
+    lines.push('');
+  });
+  
+  return lines.join('\n');
+}

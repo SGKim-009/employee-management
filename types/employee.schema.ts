@@ -49,6 +49,7 @@ export const employeeSchema = z.object({
   profile_image_url: z.string().optional(),
   status: z.enum(['active', 'inactive', 'resigned']).default('active'),
   notes: z.string().optional().default(''),
+  manager_id: z.string().optional(),
 }).refine((data) => {
   // 퇴사 상태일 때 퇴사일 필수
   if (data.status === 'resigned' && !data.resignation_date) {

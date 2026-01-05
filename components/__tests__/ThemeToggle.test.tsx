@@ -20,7 +20,7 @@ describe('ThemeToggle', () => {
 
   it('should have aria-label for accessibility', () => {
     render(<ThemeToggle />);
-    const button = screen.getByLabelText(/테마 전환/i);
+    const button = screen.getByLabelText(/라이트 모드로 전환|다크 모드로 전환|테마 전환/i);
     expect(button).toBeInTheDocument();
   });
 

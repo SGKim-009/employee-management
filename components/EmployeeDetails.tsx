@@ -4,9 +4,12 @@ import Image from 'next/image';
 import { useState, useEffect, useMemo, memo } from 'react';
 import { Employee, SalaryHistory, PositionHistory } from '@/types/employee';
 import { employeeService } from '@/lib/supabaseClient';
+import { evaluationService } from '@/lib/evaluationService';
+import { Evaluation, EvaluationStats } from '@/types/evaluation';
 import { X, User, Mail, Phone, Briefcase, Calendar, TrendingUp
-    , GraduationCap, Award, History, Building, FileText } from 'lucide-react';
+    , GraduationCap, Award, History, Building, FileText, Star, Plus } from 'lucide-react';
 import Link from 'next/link';
+import EvaluationForm from './EvaluationForm';
 
 interface EmployeeDetailsProps {
   employee: Employee;
@@ -14,24 +17,37 @@ interface EmployeeDetailsProps {
 }
 
 function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
-  const [activeTab, setActiveTab] = useState<'info' | 'history'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'history' | 'evaluation'>('info');
   const [salaryHistory, setSalaryHistory] = useState<SalaryHistory[]>([]);
   const [positionHistory, setPositionHistory] = useState<PositionHistory[]>([]);
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [evaluationStats, setEvaluationStats] = useState<EvaluationStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showEvaluationForm, setShowEvaluationForm] = useState(false);
 
   useEffect(() => {
     fetchHistory();
   }, [employee.id]);
 
+  useEffect(() => {
+    if (activeTab === 'evaluation') {
+      fetchHistory();
+    }
+  }, [activeTab]);
+
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      const [salary, position] = await Promise.all([
+      const [salary, position, evaluationsData, stats] = await Promise.all([
         employeeService.getSalaryHistory(employee.id),
-        employeeService.getPositionHistory(employee.id)
+        employeeService.getPositionHistory(employee.id),
+        evaluationService.getEvaluationsByEmployee(employee.id),
+        evaluationService.getEvaluationStats(employee.id)
       ]);
       setSalaryHistory(salary);
       setPositionHistory(position);
+      setEvaluations(evaluationsData);
+      setEvaluationStats(stats);
     } catch (error) {
       console.error('Error fetching history:', error);
     } finally {
@@ -111,6 +127,18 @@ function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
               aria-pressed={activeTab === 'history'}
             >
               변동 이력
+            </button>
+            <button
+              onClick={() => setActiveTab('evaluation')}
+              className={`px-6 py-4 font-medium transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                activeTab === 'evaluation'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+              aria-label="성과 평가 탭"
+              aria-pressed={activeTab === 'evaluation'}
+            >
+              성과 평가
             </button>
           </div>
         </div>
@@ -372,8 +400,162 @@ function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
                 )}
               </div>
             </div>
-          )}
+          ) : activeTab === 'evaluation' ? (
+            <div className="space-y-6">
+              {/* 평가 통계 */}
+              {evaluationStats && evaluationStats.total_evaluations > 0 && (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                    <TrendingUp size={20} className="text-blue-600" />
+                    평가 통계
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">총 평가 수</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                        {evaluationStats.total_evaluations}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">평균 점수</p>
+                      <div className="flex items-center gap-2">
+                        <Star className="text-yellow-500" size={20} />
+                        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                          {evaluationStats.average_score.toFixed(1)}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">최근 평가일</p>
+                      <p className="text-gray-800 dark:text-gray-200">
+                        {evaluationStats.latest_evaluation_date
+                          ? new Date(evaluationStats.latest_evaluation_date).toLocaleDateString('ko-KR')
+                          : '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">최근 점수</p>
+                      {evaluationStats.latest_score !== null && evaluationStats.latest_score !== undefined ? (
+                        <div className="flex items-center gap-2">
+                          <Star className="text-yellow-500" size={16} />
+                          <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                            {evaluationStats.latest_score.toFixed(1)}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400">-</p>
+                      )}
+                    </div>
+                  </div>
+                  {evaluationStats.scores_by_category.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">카테고리별 평균 점수</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {evaluationStats.scores_by_category.map((cat, index) => (
+                          <div key={index} className="bg-white dark:bg-gray-800 p-3 rounded-lg">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{cat.category}</p>
+                            <div className="flex items-center gap-1">
+                              <Star className="text-yellow-500" size={14} />
+                              <p className="font-semibold text-gray-800 dark:text-gray-200">
+                                {cat.average_score.toFixed(1)}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 평가 목록 */}
+              <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <FileText size={20} className="text-blue-600" />
+                    평가 이력 ({evaluations.length})
+                  </h3>
+                  <button
+                    onClick={() => setShowEvaluationForm(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  >
+                    <Plus size={18} />
+                    새 평가 작성
+                  </button>
+                </div>
+                {evaluations.length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileText size={48} className="mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400">
+                      평가 이력이 없습니다.
+                    </p>
+                    <button
+                      onClick={() => setShowEvaluationForm(true)}
+                      className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      첫 평가 작성하기
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {evaluations.map((evaluation) => (
+                      <Link
+                        key={evaluation.id}
+                        href={`/evaluations/${evaluation.id}`}
+                        className="block bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-md transition-all"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-semibold text-gray-800 dark:text-gray-200">
+                                {evaluation.evaluation_period}
+                              </h4>
+                              <span className={`px-2 py-1 text-xs rounded-full ${
+                                evaluation.status === 'approved' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                                evaluation.status === 'submitted' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
+                                evaluation.status === 'rejected' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                                'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                              }`}>
+                                {evaluation.status === 'approved' ? '승인됨' :
+                                 evaluation.status === 'submitted' ? '제출됨' :
+                                 evaluation.status === 'rejected' ? '반려됨' :
+                                 '임시저장'}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-1">
+                                <Calendar size={14} />
+                                <span>{new Date(evaluation.evaluation_date).toLocaleDateString('ko-KR')}</span>
+                              </div>
+                              {evaluation.overall_score !== null && evaluation.overall_score !== undefined && (
+                                <div className="flex items-center gap-1">
+                                  <Star className="text-yellow-500" size={14} />
+                                  <span className="font-semibold">{evaluation.overall_score.toFixed(1)}점</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
+
+        {/* 평가 작성 폼 */}
+        {showEvaluationForm && (
+          <EvaluationForm
+            employee={employee}
+            onClose={() => setShowEvaluationForm(false)}
+            onSuccess={() => {
+              setShowEvaluationForm(false);
+              fetchHistory();
+            }}
+          />
+        )}
 
         {/* 푸터 */}
         <div className="border-t p-4 bg-gray-50">

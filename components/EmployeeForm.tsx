@@ -22,6 +22,7 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
   const [activeTab, setActiveTab] = useState<'basic' | 'education' | 'career' | 'salary'>('basic');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [availableManagers, setAvailableManagers] = useState<Employee[]>([]);
   
   // React Hook Form 설정
   const {
@@ -62,7 +63,8 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
       career_history: [],
       profile_image_url: '',
       status: 'active',
-      notes: ''
+      notes: '',
+      manager_id: ''
     }
   });
 
@@ -275,7 +277,8 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
         career_history: employee.career_history || [],
         profile_image_url: employee.profile_image_url || '',
         status: employee.status as 'active' | 'inactive' | 'resigned',
-        notes: employee.notes || ''
+        notes: employee.notes || '',
+        manager_id: employee.manager_id || ''
       };
       
       reset(employeeData);
@@ -745,6 +748,24 @@ function EmployeeForm({ employee, onSubmit, onCancel }: EmployeeFormProps) {
                     {errors.department && (
                       <p className="text-red-500 text-xs mt-1">{errors.department.message}</p>
                     )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      상급자 (직속 상사)
+                    </label>
+                    <select
+                      {...register('manager_id')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">상급자 없음</option>
+                      {availableManagers.map((manager) => (
+                        <option key={manager.id} value={manager.id}>
+                          {manager.name} ({manager.position} - {manager.department})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">보고 체계를 설정합니다</p>
                   </div>
 
                   <div>

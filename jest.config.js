@@ -19,6 +19,13 @@ const customJestConfig = {
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',
+    '!**/e2e/**',
+    '!**/__tests__/**',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '/e2e/',
   ],
   coverageThreshold: {
     global: {

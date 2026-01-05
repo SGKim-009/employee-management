@@ -187,3 +187,4 @@ SELECT id, 'admin' FROM auth.users WHERE email = 'your-email@example.com';
 문제가 발생하면 [문제 해결](#-문제-해결) 섹션을 참고하거나 문서를 확인하세요.
 
 
+

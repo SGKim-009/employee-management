@@ -21,7 +21,7 @@ export default function LoadingSpinner({
 
   return (
     <div className={containerClasses}>
-      <div className="text-center animate-fade-in">
+      <div className="text-center animate-fade-in" role="status" aria-label={text}>
         <div className={`animate-spin rounded-full border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 mx-auto mb-4 ${sizeClasses[size]}`}></div>
         {text && <p className="text-gray-600 dark:text-gray-300 animate-pulse-slow">{text}</p>}
       </div>

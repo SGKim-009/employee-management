@@ -60,6 +60,7 @@ export interface Employee {
   // 메타
   status: string;
   notes?: string;
+  manager_id?: string; // 🆕 직속 상사(상급자) ID
   created_at?: string;
   updated_at?: string;
 }

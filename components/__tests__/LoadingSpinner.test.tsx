@@ -4,7 +4,7 @@ import LoadingSpinner from '../LoadingSpinner';
 describe('LoadingSpinner', () => {
   it('should render loading spinner', () => {
     render(<LoadingSpinner />);
-    const spinner = screen.getByRole('status', { hidden: true });
+    const spinner = screen.getByRole('status');
     expect(spinner).toBeInTheDocument();
   });
 
@@ -16,7 +16,7 @@ describe('LoadingSpinner', () => {
 
   it('should render with custom size', () => {
     render(<LoadingSpinner size="lg" />);
-    const spinner = screen.getByRole('status', { hidden: true });
+    const spinner = screen.getByRole('status');
     expect(spinner).toBeInTheDocument();
   });
 });

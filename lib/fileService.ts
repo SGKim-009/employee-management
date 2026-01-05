@@ -174,6 +174,25 @@ export async function deleteEmployeeFile(fileId: string): Promise<void> {
 }
 
 /**
+ * 파일명으로 파일 타입 분류
+ */
+export function categorizeFileType(fileName: string): EmployeeFile['file_type'] {
+  const lowerName = fileName.toLowerCase();
+  
+  if (lowerName.includes('resume') || lowerName.includes('이력서') || lowerName.includes('cv')) {
+    return 'resume';
+  }
+  if (lowerName.includes('contract') || lowerName.includes('계약서')) {
+    return 'contract';
+  }
+  if (lowerName.includes('document') || lowerName.includes('문서')) {
+    return 'document';
+  }
+  
+  return 'other';
+}
+
+/**
  * 파일 타입별 라벨
  */
 export function getFileTypeLabel(fileType: EmployeeFile['file_type']): string {

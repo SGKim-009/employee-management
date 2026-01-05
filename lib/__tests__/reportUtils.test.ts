@@ -100,8 +100,8 @@ describe('reportUtils', () => {
       const reportData = generateReportData(mockEmployees, mockStats);
       const text = generateTextReport(reportData);
 
-      expect(text).toContain('직원 리포트');
-      expect(text).toContain('총 직원 수');
+      expect(text).toContain('인사관리 시스템 리포트');
+      expect(text).toContain('전체 직원');
       expect(text).toContain('2');
     });
 

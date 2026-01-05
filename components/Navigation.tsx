@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { useUserRole } from '@/lib/userRole';
 import ProtectedRoute from './ProtectedRoute';
-import { Users, UserX, LogOut, Settings, TestTube, Menu, X, Bell, FileSpreadsheet } from 'lucide-react';
+import { Users, UserX, LogOut, Settings, TestTube, Menu, X, Bell, FileSpreadsheet, Network, FileText, Calendar, DollarSign } from 'lucide-react';
 import { showToast } from '@/lib/toast';
 import ThemeToggle from './ThemeToggle';
 import { getUnreadNotificationCount } from '@/lib/notificationUtils';
@@ -112,6 +112,42 @@ export default function Navigation() {
               >
                 <FileSpreadsheet size={18} />
                 엑셀 임포트
+              </Link>
+              <Link
+                href="/org-chart"
+                className={`px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname === '/org-chart' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <Network size={18} />
+                조직도
+              </Link>
+              <Link
+                href="/evaluations"
+                className={`px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/evaluations') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <FileText size={18} />
+                성과 평가
+              </Link>
+              <Link
+                href="/leaves"
+                className={`px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/leaves') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <Calendar size={18} />
+                휴가 관리
+              </Link>
+              <Link
+                href="/payroll"
+                className={`px-3 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/payroll') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <DollarSign size={18} />
+                급여 관리
               </Link>
             </div>
           </div>
@@ -246,6 +282,46 @@ export default function Navigation() {
               >
                 <FileSpreadsheet size={18} />
                 엑셀 임포트
+              </Link>
+              <Link
+                href="/org-chart"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname === '/org-chart' ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <Network size={18} />
+                조직도
+              </Link>
+              <Link
+                href="/evaluations"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/evaluations') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <FileText size={18} />
+                성과 평가
+              </Link>
+              <Link
+                href="/leaves"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/leaves') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <Calendar size={18} />
+                휴가 관리
+              </Link>
+              <Link
+                href="/payroll"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-2 ${
+                  pathname?.startsWith('/payroll') ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800' : ''
+                }`}
+              >
+                <DollarSign size={18} />
+                급여 관리
               </Link>
 
               {/* 모바일 테마 전환 버튼 */}
