@@ -161,3 +161,4 @@ INSERT INTO evaluation_criteria (name, description, weight, category) VALUES
 ON CONFLICT DO NOTHING;
 
 
+

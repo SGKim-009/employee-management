@@ -188,3 +188,4 @@ SELECT id, 'admin' FROM auth.users WHERE email = 'your-email@example.com';
 
 
 
+

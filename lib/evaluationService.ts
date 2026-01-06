@@ -101,8 +101,7 @@ export const evaluationService = {
       .from('evaluations')
       .select(`
         *,
-        employee:employees(id, name, department, position),
-        evaluator:auth.users(id, email)
+        employee:employees(id, name, department, position)
       `)
       .eq('id', id)
       .single();
@@ -119,9 +118,10 @@ export const evaluationService = {
       .eq('evaluation_id', id);
 
     if (scoresError) throw scoresError;
+    if (!data) throw new Error('Evaluation not found');
 
     return {
-      ...data,
+      ...(data as Record<string, any>),
       scores: scores || []
     } as Evaluation;
   },

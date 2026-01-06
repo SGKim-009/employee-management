@@ -21,3 +21,4 @@ CREATE INDEX IF NOT EXISTS idx_employees_salary_type ON employees(salary_type);
 COMMENT ON COLUMN employees.salary_type IS '급여 타입: annual(연봉) 또는 hourly(시급)';
 
 
+

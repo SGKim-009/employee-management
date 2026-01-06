@@ -17,3 +17,4 @@ CREATE INDEX IF NOT EXISTS idx_employees_manager_id ON employees(manager_id);
 COMMENT ON COLUMN employees.manager_id IS '직속 상사(상급자)의 ID. 보고 체계를 나타냅니다.';
 
 
+

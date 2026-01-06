@@ -23,7 +23,7 @@ export default function OrgChartPage() {
       setLoading(true);
       // 재직 중인 직원만 조회
       const data = await employeeService.getAll(1, 1000, '', false);
-      setEmployees(data);
+      setEmployees(data.data);
     } catch (error) {
       console.error('직원 목록 로드 실패:', error);
       showToast.error('직원 목록을 불러오는데 실패했습니다.');

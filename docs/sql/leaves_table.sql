@@ -192,3 +192,4 @@ INSERT INTO leave_types (name, code, is_paid, max_days_per_year, requires_approv
 ON CONFLICT (code) DO NOTHING;
 
 
+

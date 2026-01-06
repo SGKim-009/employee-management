@@ -35,7 +35,7 @@ export default function LeavesPage() {
     try {
       setLoading(true);
       const employeesData = await employeeService.getAll(1, 1000, '', false);
-      setEmployees(employeesData);
+      setEmployees(employeesData.data);
       await loadLeaveRequests();
     } catch (error) {
       console.error('데이터 로드 실패:', error);
