@@ -142,17 +142,17 @@ export const evaluationService = {
 
     // 각 평가의 점수 조회
     const evaluationsWithScores = await Promise.all(
-      (data || []).map(async (eval) => {
+      (data || []).map(async (evaluation) => {
         const { data: scores } = await supabase
           .from('evaluation_scores')
           .select(`
             *,
             criteria:evaluation_criteria(*)
           `)
-          .eq('evaluation_id', eval.id);
+          .eq('evaluation_id', evaluation.id);
 
         return {
-          ...eval,
+          ...evaluation,
           scores: scores || []
         } as Evaluation;
       })
@@ -267,14 +267,14 @@ export const evaluationService = {
     }
 
     const totalEvaluations = evaluations.length;
-    const totalScore = evaluations.reduce((sum, eval) => sum + (eval.overall_score || 0), 0);
+    const totalScore = evaluations.reduce((sum, evaluation) => sum + (evaluation.overall_score || 0), 0);
     const averageScore = totalScore / totalEvaluations;
 
     // 카테고리별 평균 점수 계산
     const categoryScores: { [category: string]: { total: number; count: number } } = {};
     
-    evaluations.forEach(eval => {
-      eval.scores?.forEach(score => {
+    evaluations.forEach(evaluation => {
+      evaluation.scores?.forEach(score => {
         const category = score.criteria?.category || '기타';
         if (!categoryScores[category]) {
           categoryScores[category] = { total: 0, count: 0 };

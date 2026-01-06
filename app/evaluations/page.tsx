@@ -32,7 +32,7 @@ export default function EvaluationsPage() {
         employeeService.getAll(1, 1000, '', false),
         loadEvaluations()
       ]);
-      setEmployees(employeesData);
+      setEmployees(employeesData.data);
     } catch (error) {
       console.error('데이터 로드 실패:', error);
       showToast.error('데이터를 불러오는데 실패했습니다.');
@@ -44,7 +44,8 @@ export default function EvaluationsPage() {
   const loadEvaluations = async () => {
     try {
       // 모든 직원의 평가를 조회 (실제로는 페이지네이션이 필요할 수 있음)
-      const allEmployees = await employeeService.getAll(1, 1000, '', false);
+      const allEmployeesResult = await employeeService.getAll(1, 1000, '', false);
+      const allEmployees = allEmployeesResult.data;
       const allEvaluations: Evaluation[] = [];
       
       for (const employee of allEmployees) {
@@ -72,12 +73,12 @@ export default function EvaluationsPage() {
     loadEvaluations();
   };
 
-  const filteredEvaluations = evaluations.filter(eval => {
+  const filteredEvaluations = evaluations.filter(evaluation => {
     const matchesSearch = !searchTerm || 
-      eval.employee?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      eval.evaluation_period.toLowerCase().includes(searchTerm.toLowerCase());
+      evaluation.employee?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      evaluation.evaluation_period.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesEmployee = !selectedEmployee || eval.employee_id === selectedEmployee;
+    const matchesEmployee = !selectedEmployee || evaluation.employee_id === selectedEmployee;
     
     return matchesSearch && matchesEmployee;
   });

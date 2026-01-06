@@ -46,7 +46,8 @@ export default function LeaveCalendarPage() {
       const month = currentDate.getMonth();
       
       // 모든 직원 조회
-      const allEmployees = await employeeService.getAll(1, 1000, '', false);
+      const allEmployeesResult = await employeeService.getAll(1, 1000, '', false);
+      const allEmployees = allEmployeesResult.data;
       const allRequests: LeaveRequest[] = [];
       
       // 모든 직원의 휴가 신청 조회

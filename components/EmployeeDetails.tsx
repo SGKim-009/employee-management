@@ -296,7 +296,7 @@ function EmployeeDetails({ employee, onClose }: EmployeeDetailsProps) {
                 </div>
               )}
             </div>
-          ) : (
+          ) : activeTab === 'history' ? (
             <div className="space-y-6">
               {/* 인사 변동 이력 */}
               <div className="bg-gray-50 p-5 rounded-lg">
