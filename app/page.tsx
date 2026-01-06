@@ -507,7 +507,7 @@ function HomeContent() {
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6">
         {/* 액션 버튼 */}
         <div className="flex justify-end mb-6">
           <div className="flex gap-3">
@@ -1037,8 +1037,8 @@ function HomeContent() {
             onClose={() => setPrintingEmployee(null)}
           />
         )}
-      </div>
-    </main>
+        </div>
+      </main>
     </ProtectedRoute>
   );
 }
