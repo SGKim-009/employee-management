@@ -132,8 +132,7 @@ export const evaluationService = {
       .from('evaluations')
       .select(`
         *,
-        employee:employees(id, name, department, position),
-        evaluator:auth.users(id, email)
+        employee:employees(id, name, department, position)
       `)
       .eq('employee_id', employeeId)
       .order('evaluation_date', { ascending: false });
@@ -142,7 +141,7 @@ export const evaluationService = {
 
     // 각 평가의 점수 조회
     const evaluationsWithScores = await Promise.all(
-      (data || []).map(async (evaluation) => {
+      (data || []).map(async (evaluation: any) => {
         const { data: scores } = await supabase
           .from('evaluation_scores')
           .select(`

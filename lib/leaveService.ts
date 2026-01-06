@@ -46,14 +46,13 @@ export const leaveService = {
       .select(`
         *,
         employee:employees(id, name, department, position),
-        leave_type:leave_types(*),
-        approver:auth.users(id, email)
+        leave_type:leave_types(*)
       `)
       .eq('id', id)
       .single();
 
     if (error) throw error;
-    return data as LeaveRequest;
+    return data as unknown as LeaveRequest;
   },
 
   // 직원별 휴가 신청 목록 조회
@@ -62,8 +61,7 @@ export const leaveService = {
       .from('leave_requests')
       .select(`
         *,
-        leave_type:leave_types(*),
-        approver:auth.users(id, email)
+        leave_type:leave_types(*)
       `)
       .eq('employee_id', employeeId)
       .order('start_date', { ascending: false });
@@ -75,7 +73,7 @@ export const leaveService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data || [];
+    return (data || []) as LeaveRequest[];
   },
 
   // 승인 대기 중인 휴가 신청 목록 조회
@@ -85,14 +83,13 @@ export const leaveService = {
       .select(`
         *,
         employee:employees(id, name, department, position),
-        leave_type:leave_types(*),
-        approver:auth.users(id, email)
+        leave_type:leave_types(*)
       `)
       .eq('status', 'pending')
       .order('created_at', { ascending: true });
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as LeaveRequest[];
   },
 
   // 휴가 신청 승인
