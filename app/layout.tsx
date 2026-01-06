@@ -5,6 +5,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Navigation from '@/components/Navigation';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 import { EnvCheck } from './env-check';
 import './globals.css';
 
@@ -36,10 +38,13 @@ export default function RootLayout({
             disableTransitionOnChange={false}
           >
             <AuthProvider>
-              <Navigation />
-              <main id="main-content" tabIndex={-1}>
-                {children}
-              </main>
+              <Sidebar />
+              <Header />
+              <div className="lg:ml-64 mt-16">
+                <main id="main-content" tabIndex={-1} className="p-4 lg:p-6">
+                  {children}
+                </main>
+              </div>
               <Toaster position="top-right" />
             </AuthProvider>
           </ThemeProvider>

@@ -506,67 +506,35 @@ function HomeContent() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* 헤더 */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 mb-8">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-xl">
-                <Users className="text-white" size={32} />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">인사관리 시스템</h1>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">직원 정보를 효율적으로 관리하세요</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                href="/resigned"
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                aria-label="퇴사자 관리 페이지로 이동"
-              >
-                <UserX size={20} />
-                퇴사자 관리
-              </Link>
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-6">
+        {/* 액션 버튼 */}
+        <div className="flex justify-end mb-6">
+          <div className="flex gap-3">
+            <button
+              onClick={handleExportExcel}
+              className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+            >
+              <Download size={18} />
+              엑셀 다운로드
+            </button>
+            {canWrite && (
               <button
-                onClick={handleExportExcel}
-                className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 text-sm md:text-base touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                aria-label="엑셀 다운로드"
+                onClick={() => setShowForm(true)}
+                className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center gap-2"
               >
-                <Download size={18} className="md:w-5 md:h-5" />
-                <span className="hidden sm:inline">엑셀 다운로드</span>
-                <span className="sm:hidden">다운로드</span>
+                <Plus size={18} />
+                + 직원 추가
               </button>
-              {canWrite && (
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 active:scale-95 text-sm md:text-base touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                  aria-label="새 직원 등록"
-                >
-                  <Plus size={18} className="md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">새 직원 등록</span>
-                  <span className="sm:hidden">등록</span>
-                </button>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        {/* 검색 및 통계 */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 p-6 mb-8">
+        {/* 검색 및 필터 */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-4 mb-6">
           <div className="flex flex-col gap-4">
-            {/* 통계 및 검색 */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="flex items-center gap-4 text-gray-700 dark:text-gray-200">
-                <div className="flex items-center gap-2">
-                  <Users size={20} className="text-blue-600 dark:text-blue-400" />
-                  <span className="font-semibold">전체 직원:</span>
-                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalCount}명</span>
-                </div>
-              </div>
-              
-              <div className="relative w-full md:w-96">
+            {/* 검색 */}
+            <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                 <input
                   type="text"
@@ -579,11 +547,11 @@ function HomeContent() {
               </div>
             </div>
 
-            {/* 필터 및 정렬 */}
-            <div className="flex flex-col md:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            {/* 필터 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* 부서 필터 */}
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">부서</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">부서 선택</label>
                 <select
                   value={filters.department || ''}
                   onChange={(e) => {
@@ -608,8 +576,8 @@ function HomeContent() {
               </div>
 
               {/* 직급 필터 */}
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">직급</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">직급 선택</label>
                 <select
                   value={filters.rank || ''}
                   onChange={(e) => {
@@ -635,8 +603,8 @@ function HomeContent() {
               </div>
 
               {/* 재직 상태 필터 */}
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">재직 상태</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">재직 상태</label>
                 <select
                   value={filters.status || ''}
                   onChange={(e) => {
